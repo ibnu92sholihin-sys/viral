@@ -195,14 +195,49 @@ export function isWithinMaintenanceWindow(
   }
 }
 
-// Universal URL cleaner & normalizer helper
-export function normalizeUrl(input: string): string {
+// Tolerant URL cleaner & validator (accepts any social media link format)
+// Equivalent to loose Pydantic HttpUrl / liberal regex parsing
+const LENIENT_SOCIAL_URL_REGEX = /^(https?:\/\/)?(([\w\-]+(\.[\w\-]+)+)|localhost)([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/i;
+
+export function normalizeUrl(input: string): { valid: boolean; normalized: string; error?: string } {
   let cleaned = (input || "").trim();
-  // If user pasted without protocol (e.g. tiktok.com/@user/video/123 or vm.tiktok.com/...), prepend https://
+  if (!cleaned) {
+    return {
+      valid: false,
+      normalized: "",
+      error: "URL target tidak boleh kosong. Masukkan link video TikTok, Instagram, YouTube, dsb.",
+    };
+  }
+
+  // Prepend https:// if user pasted domain without scheme (e.g. tiktok.com/@user/video/123, vt.tiktok.com/xxx)
   if (!/^https?:\/\//i.test(cleaned)) {
     cleaned = `https://${cleaned}`;
   }
-  return cleaned;
+
+  try {
+    const parsed = new URL(cleaned);
+    if (!parsed.hostname || !parsed.hostname.includes(".")) {
+      // Fallback check with lenient regex
+      if (!LENIENT_SOCIAL_URL_REGEX.test(cleaned)) {
+        return {
+          valid: false,
+          normalized: cleaned,
+          error: "Format tautan belum dikenali. Contoh yang benar: https://www.tiktok.com/@user/video/123, https://instagram.com/reel/abc, atau https://youtu.be/xyz",
+        };
+      }
+    }
+    return { valid: true, normalized: cleaned };
+  } catch (_) {
+    // If native URL parser throws due to special characters in query string, test against lenient regex
+    if (LENIENT_SOCIAL_URL_REGEX.test(cleaned)) {
+      return { valid: true, normalized: cleaned };
+    }
+    return {
+      valid: false,
+      normalized: cleaned,
+      error: "Format URL tidak valid. Pastikan format mengandung domain yang benar (contoh: tiktok.com, instagram.com, youtube.com).",
+    };
+  }
 }
 
 // Detect Platform helper with universal social media detection
@@ -349,7 +384,12 @@ app.post("/api/tasks", (req, res) => {
       return res.status(400).json({ success: false, error: "URL target tidak boleh kosong." });
     }
 
-    const normalizedUrl = normalizeUrl(url);
+    const urlResult = normalizeUrl(url);
+    if (!urlResult.valid) {
+      return res.status(400).json({ success: false, error: urlResult.error });
+    }
+
+    const normalizedUrl = urlResult.normalized;
     const minSec = Math.max(5, Number(minIntervalSec) || 15);
     const maxSec = Math.max(minSec, Number(maxIntervalSec) || 60);
     const comments = Math.max(0, Number(targetComments) || 50);
@@ -456,6 +496,17 @@ app.delete("/api/tasks/:id", (req, res) => {
 app.post("/api/analyze-video", async (req, res) => {
   try {
     const { videoUrl, frameBase64, samplePreset } = req.body;
+
+    if (videoUrl && typeof videoUrl === "string" && videoUrl.trim()) {
+      const check = normalizeUrl(videoUrl);
+      if (!check.valid && !frameBase64) {
+        return res.status(400).json({
+          success: false,
+          error: check.error || "Format URL video tidak valid. Contoh: tiktok.com/@user/video/123, instagram.com/reel/xyz, atau youtube.com/shorts/abc",
+        });
+      }
+    }
+
     const ai = getAI();
 
     // If Gemini API Key is missing or user selected mock/fallback:

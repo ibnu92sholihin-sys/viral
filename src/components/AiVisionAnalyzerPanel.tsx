@@ -127,12 +127,23 @@ export const AiVisionAnalyzerPanel: React.FC<AiVisionAnalyzerPanelProps> = ({
             <div className="relative">
               <input
                 type="text"
+                autoComplete="off"
+                spellCheck="false"
                 value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
+                onChange={(e) => {
+                  setVideoUrl(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
                 placeholder="https://... (TikTok, Reels, Shorts, FB, X, dll)"
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
               />
               <Video className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+            </div>
+            <div className="mt-1 flex items-center gap-1.5 flex-wrap text-[10px] text-slate-400">
+              <span>Contoh format:</span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">tiktok.com/@user/video/...</span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">instagram.com/reel/...</span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">youtube.com/shorts/...</span>
             </div>
           </div>
 

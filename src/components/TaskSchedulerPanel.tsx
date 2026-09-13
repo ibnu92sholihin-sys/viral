@@ -130,6 +130,7 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
       {/* Add New Task Form Modal / Accordion */}
       {showAddForm && (
         <form
+          noValidate
           onSubmit={handleSubmit}
           className="mb-6 p-4 sm:p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 transition-all"
         >
@@ -149,17 +150,28 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
                   URL Video Target (Platform Manapun) *
                 </label>
                 <span className="text-[10px] text-sky-400 font-mono">
-                  TikTok, IG, YT, FB, X, Threads, dll.
+                  Bebas Format & Fleksibel
                 </span>
               </div>
               <input
                 type="text"
-                required
+                autoComplete="off"
+                spellCheck="false"
                 value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="https://... atau tiktok.com, instagram.com/reel, dsb."
+                onChange={(e) => {
+                  setUrlInput(e.target.value);
+                  if (errorMsg) setErrorMsg(null);
+                }}
+                placeholder="Contoh: tiktok.com/@user/video/123 atau instagram.com/reel/abc"
                 className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
               />
+              <div className="mt-1 flex items-center gap-1.5 flex-wrap text-[10px] text-slate-400">
+                <span>Format yang diterima:</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">tiktok.com</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">instagram.com/reel</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">youtu.be / shorts</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">fb.watch</span>
+              </div>
             </div>
 
             <div>
@@ -173,6 +185,9 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
                 placeholder="Contoh: Video Tips Sukses FYP"
                 className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
               />
+              <span className="mt-1 text-[10px] text-slate-400 block">
+                Jika kosong, sistem otomatis membuat nama berdasarkan link video.
+              </span>
             </div>
           </div>
 

@@ -1,5 +1,635 @@
 [
   {
+    "id": "32mq49o",
+    "taskId": "task-mtzzcs0c",
+    "timestamp": "2026-09-13T15:39:56.748Z",
+    "type": "info",
+    "message": "Task baru dibuat untuk instagram.com/reel/C8921890123. Scheduler aktif dengan interval acak 15-60 detik."
+  },
+  {
+    "id": "kk5mn2l",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:39:56.070Z",
+    "type": "success",
+    "message": "Siklus #61 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 21 detik (3:40:17 PM).",
+    "details": {
+      "randomDelaySec": 21,
+      "nextRunTime": "3:40:17 PM"
+    }
+  },
+  {
+    "id": "j9uwr55",
+    "taskId": "task-mtzzcplu",
+    "timestamp": "2026-09-13T15:39:53.635Z",
+    "type": "info",
+    "message": "Task baru dibuat untuk https://www.tiktok.com/@creator/video/73918291039. Scheduler aktif dengan interval acak 15-60 detik."
+  },
+  {
+    "id": "opebn6l",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:39:53.069Z",
+    "type": "success",
+    "message": "Siklus #13 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 48 detik (3:40:41 PM).",
+    "details": {
+      "randomDelaySec": 48,
+      "nextRunTime": "3:40:41 PM"
+    }
+  },
+  {
+    "id": "rk4ijrg",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:39:35.069Z",
+    "type": "success",
+    "message": "Siklus #14 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 56 detik (3:40:31 PM).",
+    "details": {
+      "randomDelaySec": 56,
+      "nextRunTime": "3:40:31 PM"
+    }
+  },
+  {
+    "id": "ig000ap",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:39:35.069Z",
+    "type": "success",
+    "message": "Siklus #60 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 21 detik (3:39:56 PM).",
+    "details": {
+      "randomDelaySec": 21,
+      "nextRunTime": "3:39:56 PM"
+    }
+  },
+  {
+    "id": "6ccpz59",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:39:20.065Z",
+    "type": "success",
+    "message": "Siklus #59 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 14 detik (3:39:34 PM).",
+    "details": {
+      "randomDelaySec": 14,
+      "nextRunTime": "3:39:34 PM"
+    }
+  },
+  {
+    "id": "jzflr19",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:39:17.064Z",
+    "type": "success",
+    "message": "Siklus #13 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 16 detik (3:39:33 PM).",
+    "details": {
+      "randomDelaySec": 16,
+      "nextRunTime": "3:39:33 PM"
+    }
+  },
+  {
+    "id": "55pe8sm",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:39:02.060Z",
+    "type": "success",
+    "message": "Siklus #58 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 18 detik (3:39:20 PM).",
+    "details": {
+      "randomDelaySec": 18,
+      "nextRunTime": "3:39:20 PM"
+    }
+  },
+  {
+    "id": "cfqz9dj",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:38:53.058Z",
+    "type": "success",
+    "message": "Siklus #12 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 58 detik (3:39:51 PM).",
+    "details": {
+      "randomDelaySec": 58,
+      "nextRunTime": "3:39:51 PM"
+    }
+  },
+  {
+    "id": "gegxo8a",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:38:47.058Z",
+    "type": "success",
+    "message": "Siklus #57 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 13 detik (3:39:00 PM).",
+    "details": {
+      "randomDelaySec": 13,
+      "nextRunTime": "3:39:00 PM"
+    }
+  },
+  {
+    "id": "m4m2uit",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:38:35.054Z",
+    "type": "success",
+    "message": "Siklus #12 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 42 detik (3:39:17 PM).",
+    "details": {
+      "randomDelaySec": 42,
+      "nextRunTime": "3:39:17 PM"
+    }
+  },
+  {
+    "id": "3fxoijk",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:38:26.051Z",
+    "type": "success",
+    "message": "Siklus #56 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 21 detik (3:38:47 PM).",
+    "details": {
+      "randomDelaySec": 21,
+      "nextRunTime": "3:38:47 PM"
+    }
+  },
+  {
+    "id": "fqwftpo",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:38:20.049Z",
+    "type": "success",
+    "message": "Siklus #11 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 15 detik (3:38:35 PM).",
+    "details": {
+      "randomDelaySec": 15,
+      "nextRunTime": "3:38:35 PM"
+    }
+  },
+  {
+    "id": "pmw9sv4",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:38:11.046Z",
+    "type": "success",
+    "message": "Siklus #11 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 41 detik (3:38:52 PM).",
+    "details": {
+      "randomDelaySec": 41,
+      "nextRunTime": "3:38:52 PM"
+    }
+  },
+  {
+    "id": "vfqf1ga",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:38:08.045Z",
+    "type": "success",
+    "message": "Siklus #55 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 18 detik (3:38:26 PM).",
+    "details": {
+      "randomDelaySec": 18,
+      "nextRunTime": "3:38:26 PM"
+    }
+  },
+  {
+    "id": "lu8vmcl",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:37:53.041Z",
+    "type": "success",
+    "message": "Siklus #10 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 17 detik (3:38:10 PM).",
+    "details": {
+      "randomDelaySec": 17,
+      "nextRunTime": "3:38:10 PM"
+    }
+  },
+  {
+    "id": "4rteb4e",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:37:47.041Z",
+    "type": "success",
+    "message": "Siklus #54 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 19 detik (3:38:06 PM).",
+    "details": {
+      "randomDelaySec": 19,
+      "nextRunTime": "3:38:06 PM"
+    }
+  },
+  {
+    "id": "hny6yn7",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:37:44.040Z",
+    "type": "success",
+    "message": "Siklus #10 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 36 detik (3:38:20 PM).",
+    "details": {
+      "randomDelaySec": 36,
+      "nextRunTime": "3:38:20 PM"
+    }
+  },
+  {
+    "id": "wsmjry5",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:37:29.038Z",
+    "type": "success",
+    "message": "Siklus #53 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 18 detik (3:37:47 PM).",
+    "details": {
+      "randomDelaySec": 18,
+      "nextRunTime": "3:37:47 PM"
+    }
+  },
+  {
+    "id": "hvk9vge",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:37:14.033Z",
+    "type": "success",
+    "message": "Siklus #52 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 15 detik (3:37:29 PM).",
+    "details": {
+      "randomDelaySec": 15,
+      "nextRunTime": "3:37:29 PM"
+    }
+  },
+  {
+    "id": "x2st6y4",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:37:02.030Z",
+    "type": "success",
+    "message": "Siklus #51 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 10 detik (3:37:12 PM).",
+    "details": {
+      "randomDelaySec": 10,
+      "nextRunTime": "3:37:12 PM"
+    }
+  },
+  {
+    "id": "6usc17l",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:36:59.029Z",
+    "type": "success",
+    "message": "Siklus #9 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 53 detik (3:37:52 PM).",
+    "details": {
+      "randomDelaySec": 53,
+      "nextRunTime": "3:37:52 PM"
+    }
+  },
+  {
+    "id": "lu2vop0",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:36:56.028Z",
+    "type": "success",
+    "message": "Siklus #9 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 46 detik (3:37:42 PM).",
+    "details": {
+      "randomDelaySec": 46,
+      "nextRunTime": "3:37:42 PM"
+    }
+  },
+  {
+    "id": "ghcpa5v",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:36:38.025Z",
+    "type": "success",
+    "message": "Siklus #50 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 24 detik (3:37:02 PM).",
+    "details": {
+      "randomDelaySec": 24,
+      "nextRunTime": "3:37:02 PM"
+    }
+  },
+  {
+    "id": "bt0bsmv",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:36:23.020Z",
+    "type": "success",
+    "message": "Siklus #49 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 13 detik (3:36:36 PM).",
+    "details": {
+      "randomDelaySec": 13,
+      "nextRunTime": "3:36:36 PM"
+    }
+  },
+  {
+    "id": "tlefne4",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:36:08.018Z",
+    "type": "success",
+    "message": "Siklus #8 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 51 detik (3:36:59 PM).",
+    "details": {
+      "randomDelaySec": 51,
+      "nextRunTime": "3:36:59 PM"
+    }
+  },
+  {
+    "id": "izaoldu",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:36:08.018Z",
+    "type": "success",
+    "message": "Siklus #48 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 14 detik (3:36:22 PM).",
+    "details": {
+      "randomDelaySec": 14,
+      "nextRunTime": "3:36:22 PM"
+    }
+  },
+  {
+    "id": "7f66sd7",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:35:56.015Z",
+    "type": "success",
+    "message": "Siklus #8 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 59 detik (3:36:55 PM).",
+    "details": {
+      "randomDelaySec": 59,
+      "nextRunTime": "3:36:55 PM"
+    }
+  },
+  {
+    "id": "jogc3ak",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:35:41.013Z",
+    "type": "success",
+    "message": "Siklus #7 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 27 detik (3:36:08 PM).",
+    "details": {
+      "randomDelaySec": 27,
+      "nextRunTime": "3:36:08 PM"
+    }
+  },
+  {
+    "id": "c8xi1j0",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:35:41.013Z",
+    "type": "success",
+    "message": "Siklus #47 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 25 detik (3:36:06 PM).",
+    "details": {
+      "randomDelaySec": 25,
+      "nextRunTime": "3:36:06 PM"
+    }
+  },
+  {
+    "id": "6ww14ug",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:35:29.011Z",
+    "type": "success",
+    "message": "Siklus #46 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 10 detik (3:35:39 PM).",
+    "details": {
+      "randomDelaySec": 10,
+      "nextRunTime": "3:35:39 PM"
+    }
+  },
+  {
+    "id": "lwbjd28",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:35:23.009Z",
+    "type": "success",
+    "message": "Siklus #7 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 32 detik (3:35:55 PM).",
+    "details": {
+      "randomDelaySec": 32,
+      "nextRunTime": "3:35:55 PM"
+    }
+  },
+  {
+    "id": "q51d4gd",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:35:02.005Z",
+    "type": "success",
+    "message": "Siklus #45 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 25 detik (3:35:27 PM).",
+    "details": {
+      "randomDelaySec": 25,
+      "nextRunTime": "3:35:27 PM"
+    }
+  },
+  {
+    "id": "nrs6stq",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:34:50.001Z",
+    "type": "success",
+    "message": "Siklus #6 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 50 detik (3:35:40 PM).",
+    "details": {
+      "randomDelaySec": 50,
+      "nextRunTime": "3:35:40 PM"
+    }
+  },
+  {
+    "id": "1hou8e8",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:34:47.000Z",
+    "type": "success",
+    "message": "Siklus #6 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 34 detik (3:35:21 PM).",
+    "details": {
+      "randomDelaySec": 34,
+      "nextRunTime": "3:35:21 PM"
+    }
+  },
+  {
+    "id": "natv49c",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:34:43.998Z",
+    "type": "success",
+    "message": "Siklus #44 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 17 detik (3:35:00 PM).",
+    "details": {
+      "randomDelaySec": 17,
+      "nextRunTime": "3:35:00 PM"
+    }
+  },
+  {
+    "id": "75092nd",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:34:28.996Z",
+    "type": "success",
+    "message": "Siklus #43 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 14 detik (3:34:42 PM).",
+    "details": {
+      "randomDelaySec": 14,
+      "nextRunTime": "3:34:42 PM"
+    }
+  },
+  {
+    "id": "jwzrgdm",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:34:13.994Z",
+    "type": "success",
+    "message": "Siklus #42 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 15 detik (3:34:28 PM).",
+    "details": {
+      "randomDelaySec": 15,
+      "nextRunTime": "3:34:28 PM"
+    }
+  },
+  {
+    "id": "uwcqqn3",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:34:07.992Z",
+    "type": "success",
+    "message": "Siklus #5 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 42 detik (3:34:49 PM).",
+    "details": {
+      "randomDelaySec": 42,
+      "nextRunTime": "3:34:49 PM"
+    }
+  },
+  {
+    "id": "n329kts",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:33:58.991Z",
+    "type": "success",
+    "message": "Siklus #5 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 47 detik (3:34:45 PM).",
+    "details": {
+      "randomDelaySec": 47,
+      "nextRunTime": "3:34:45 PM"
+    }
+  },
+  {
+    "id": "w4ooypy",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:33:49.989Z",
+    "type": "success",
+    "message": "Siklus #4 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 16 detik (3:34:05 PM).",
+    "details": {
+      "randomDelaySec": 16,
+      "nextRunTime": "3:34:05 PM"
+    }
+  },
+  {
+    "id": "wkf6u74",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:33:49.989Z",
+    "type": "success",
+    "message": "Siklus #41 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 23 detik (3:34:12 PM).",
+    "details": {
+      "randomDelaySec": 23,
+      "nextRunTime": "3:34:12 PM"
+    }
+  },
+  {
+    "id": "2v69wya",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:33:24.705Z",
+    "type": "success",
+    "message": "Siklus #40 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 21 detik (3:33:45 PM).",
+    "details": {
+      "randomDelaySec": 21,
+      "nextRunTime": "3:33:45 PM"
+    }
+  },
+  {
+    "id": "6d9hse7",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:33:15.703Z",
+    "type": "success",
+    "message": "Siklus #4 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 41 detik (3:33:56 PM).",
+    "details": {
+      "randomDelaySec": 41,
+      "nextRunTime": "3:33:56 PM"
+    }
+  },
+  {
+    "id": "wzg0qt2",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:33:06.701Z",
+    "type": "success",
+    "message": "Siklus #39 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 18 detik (3:33:24 PM).",
+    "details": {
+      "randomDelaySec": 18,
+      "nextRunTime": "3:33:24 PM"
+    }
+  },
+  {
+    "id": "gncrobs",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:32:57.699Z",
+    "type": "success",
+    "message": "Siklus #3 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 47 detik (3:33:44 PM).",
+    "details": {
+      "randomDelaySec": 47,
+      "nextRunTime": "3:33:44 PM"
+    }
+  },
+  {
+    "id": "5msjz40",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:32:48.697Z",
+    "type": "success",
+    "message": "Siklus #38 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 17 detik (3:33:05 PM).",
+    "details": {
+      "randomDelaySec": 17,
+      "nextRunTime": "3:33:05 PM"
+    }
+  },
+  {
+    "id": "vk5naei",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:32:36.694Z",
+    "type": "success",
+    "message": "Siklus #3 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 39 detik (3:33:15 PM).",
+    "details": {
+      "randomDelaySec": 39,
+      "nextRunTime": "3:33:15 PM"
+    }
+  },
+  {
+    "id": "ron7qus",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:32:33.694Z",
+    "type": "success",
+    "message": "Siklus #37 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 15 detik (3:32:48 PM).",
+    "details": {
+      "randomDelaySec": 15,
+      "nextRunTime": "3:32:48 PM"
+    }
+  },
+  {
+    "id": "1sqnwck",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:32:24.691Z",
+    "type": "success",
+    "message": "Siklus #2 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 31 detik (3:32:55 PM).",
+    "details": {
+      "randomDelaySec": 31,
+      "nextRunTime": "3:32:55 PM"
+    }
+  },
+  {
+    "id": "0dvyh80",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:32:18.689Z",
+    "type": "success",
+    "message": "Siklus #36 selesai: Audit metrik penonton & ritme retensi. Jeda berikutnya: 13 detik (3:32:31 PM).",
+    "details": {
+      "randomDelaySec": 13,
+      "nextRunTime": "3:32:31 PM"
+    }
+  },
+  {
+    "id": "tl9uu3a",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:32:03.685Z",
+    "type": "success",
+    "message": "Siklus #35 selesai: Pemeriksaan kesehatan sinyal algoritma & discoverability. Jeda berikutnya: 13 detik (3:32:16 PM).",
+    "details": {
+      "randomDelaySec": 13,
+      "nextRunTime": "3:32:16 PM"
+    }
+  },
+  {
+    "id": "lzf7un8",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:31:48.683Z",
+    "type": "success",
+    "message": "Siklus #2 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 47 detik (3:32:35 PM).",
+    "details": {
+      "randomDelaySec": 47,
+      "nextRunTime": "3:32:35 PM"
+    }
+  },
+  {
+    "id": "5skmdxf",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:31:39.681Z",
+    "type": "success",
+    "message": "Siklus #34 selesai: Sinkronisasi buffer interaksi aman (Safe Ratio 1:20). Jeda berikutnya: 24 detik (3:32:03 PM).",
+    "details": {
+      "randomDelaySec": 24,
+      "nextRunTime": "3:32:03 PM"
+    }
+  },
+  {
+    "id": "atsf45b",
+    "taskId": "task-mtzz169x",
+    "timestamp": "2026-09-13T15:31:30.680Z",
+    "type": "success",
+    "message": "Siklus #1 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 52 detik (3:32:22 PM).",
+    "details": {
+      "randomDelaySec": 52,
+      "nextRunTime": "3:32:22 PM"
+    }
+  },
+  {
+    "id": "4tf6a5f",
+    "taskId": "task-demo-1",
+    "timestamp": "2026-09-13T15:31:18.677Z",
+    "type": "success",
+    "message": "Siklus #33 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 21 detik (3:31:39 PM).",
+    "details": {
+      "randomDelaySec": 21,
+      "nextRunTime": "3:31:39 PM"
+    }
+  },
+  {
+    "id": "h87gxkg",
+    "taskId": "task-mtzz0zl4",
+    "timestamp": "2026-09-13T15:31:12.676Z",
+    "type": "success",
+    "message": "Siklus #1 selesai: Evaluasi respon komentar organik & rasio like. Jeda berikutnya: 36 detik (3:31:48 PM).",
+    "details": {
+      "randomDelaySec": 36,
+      "nextRunTime": "3:31:48 PM"
+    }
+  },
+  {
     "id": "9hkduwe",
     "taskId": "task-demo-1",
     "timestamp": "2026-09-13T15:30:53.829Z",

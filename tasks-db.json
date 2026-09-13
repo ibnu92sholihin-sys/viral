@@ -20,9 +20,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 32,
-    "lastRunAt": "2026-09-13T15:30:53.829Z",
-    "nextRunAt": "2026-09-13T15:31:17.829Z",
+    "totalCycles": 61,
+    "lastRunAt": "2026-09-13T15:39:56.070Z",
+    "nextRunAt": "2026-09-13T15:40:17.070Z",
     "analysis": {
       "objects": [
         "Presenter edukasi",
@@ -68,9 +68,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 0,
-    "lastRunAt": null,
-    "nextRunAt": "2026-09-13T15:31:09.696Z",
+    "totalCycles": 14,
+    "lastRunAt": "2026-09-13T15:39:35.069Z",
+    "nextRunAt": "2026-09-13T15:40:31.069Z",
     "createdAt": "2026-09-13T15:30:46.696Z"
   },
   {
@@ -94,9 +94,87 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
+    "totalCycles": 13,
+    "lastRunAt": "2026-09-13T15:39:53.069Z",
+    "nextRunAt": "2026-09-13T15:40:41.069Z",
+    "createdAt": "2026-09-13T15:30:55.365Z"
+  },
+  {
+    "id": "task-mtzzcplu",
+    "url": "https://www.tiktok.com/@creator/video/73918291039",
+    "platform": "tiktok",
+    "title": "Tiktok Video",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 40,
+    "projections": {
+      "targetKomentar": 40,
+      "min_views": 800,
+      "min_likes": 120,
+      "min_saves": 32,
+      "min_shares": 16,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
     "totalCycles": 0,
     "lastRunAt": null,
-    "nextRunAt": "2026-09-13T15:31:30.365Z",
-    "createdAt": "2026-09-13T15:30:55.365Z"
+    "nextRunAt": "2026-09-13T15:40:42.635Z",
+    "createdAt": "2026-09-13T15:39:53.635Z"
+  },
+  {
+    "id": "task-mtzzcs0c",
+    "url": "https://instagram.com/reel/C8921890123",
+    "platform": "instagram",
+    "title": "IG Reel",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 50,
+    "projections": {
+      "targetKomentar": 50,
+      "min_views": 1000,
+      "min_likes": 150,
+      "min_saves": 40,
+      "min_shares": 20,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
+    "totalCycles": 0,
+    "lastRunAt": null,
+    "nextRunAt": "2026-09-13T15:40:34.748Z",
+    "createdAt": "2026-09-13T15:39:56.748Z"
+  },
+  {
+    "id": "task-mtzzctj3",
+    "url": "https://youtu.be/k92019a829a",
+    "platform": "youtube",
+    "title": "YT Short",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 60,
+    "projections": {
+      "targetKomentar": 60,
+      "min_views": 1200,
+      "min_likes": 180,
+      "min_saves": 48,
+      "min_shares": 24,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
+    "totalCycles": 0,
+    "lastRunAt": null,
+    "nextRunAt": "2026-09-13T15:40:27.719Z",
+    "createdAt": "2026-09-13T15:39:58.719Z"
   }
 ]
