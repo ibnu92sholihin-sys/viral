@@ -1,0 +1,102 @@
+[
+  {
+    "id": "task-demo-1",
+    "url": "https://www.tiktok.com/@edukasi_kreatif/video/73918291039",
+    "platform": "tiktok",
+    "title": "Panduan Algoritma Edukasi Visual 2026",
+    "status": "running",
+    "minIntervalSec": 10,
+    "maxIntervalSec": 25,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 50,
+    "projections": {
+      "targetKomentar": 50,
+      "min_views": 1000,
+      "min_likes": 150,
+      "min_saves": 40,
+      "min_shares": 20,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
+    "totalCycles": 32,
+    "lastRunAt": "2026-09-13T15:30:53.829Z",
+    "nextRunAt": "2026-09-13T15:31:17.829Z",
+    "analysis": {
+      "objects": [
+        "Presenter edukasi",
+        "Papan infografis digital",
+        "Diagram pertumbuhan interaksi"
+      ],
+      "dominantColors": [
+        "#0284c7 (Sky Blue)",
+        "#0f172a (Deep Slate)",
+        "#10b981 (Emerald)"
+      ],
+      "vibe": "Informatif, profesional, fokus tinggi dengan tempo penjelasan dinamis",
+      "strategyAdvice": [
+        "Gunakan hook pertanyaan interaktif di 3 detik pertama",
+        "Balas komentar pertama dalam 15 menit untuk memicu sinyal percakapan organik",
+        "Jaga rasio likes minimal 3x dari jumlah komentar agar tidak terbaca anomali"
+      ],
+      "suggestedOrganicHooks": [
+        "Kenapa video edukasi ini bisa ditonton sampai habis? Perhatikan 3 formula ini!",
+        "Tips rahasia mengatur ritme visual agar penonton tidak skip di detik ke-5."
+      ]
+    },
+    "createdAt": "2026-09-13T14:21:29.126Z"
+  },
+  {
+    "id": "task-mtzz0zl4",
+    "url": "fb.watch/xyz123",
+    "platform": "generic",
+    "title": "Facebook Reel Demo",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 30,
+    "projections": {
+      "targetKomentar": 30,
+      "min_views": 600,
+      "min_likes": 90,
+      "min_saves": 24,
+      "min_shares": 12,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
+    "totalCycles": 0,
+    "lastRunAt": null,
+    "nextRunAt": "2026-09-13T15:31:09.696Z",
+    "createdAt": "2026-09-13T15:30:46.696Z"
+  },
+  {
+    "id": "task-mtzz169x",
+    "url": "https://x.com/tech_creators/status/1829102910",
+    "platform": "twitter",
+    "title": "X Video Post",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 25,
+    "projections": {
+      "targetKomentar": 25,
+      "min_views": 500,
+      "min_likes": 75,
+      "min_saves": 20,
+      "min_shares": 10,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
+    "totalCycles": 0,
+    "lastRunAt": null,
+    "nextRunAt": "2026-09-13T15:31:30.365Z",
+    "createdAt": "2026-09-13T15:30:55.365Z"
+  }
+]

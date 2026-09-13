@@ -83,8 +83,20 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
         return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">Instagram Reels</span>;
       case "youtube":
         return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-red-500/20 text-red-300 border border-red-500/30">YouTube Shorts</span>;
+      case "facebook":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-600/20 text-blue-300 border border-blue-600/30">Facebook Video</span>;
+      case "twitter":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30">X / Twitter</span>;
+      case "threads":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-700/40 text-zinc-300 border border-zinc-600/40">Threads</span>;
+      case "linkedin":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-600/20 text-cyan-300 border border-cyan-600/30">LinkedIn</span>;
+      case "pinterest":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-600/20 text-rose-300 border border-rose-600/30">Pinterest</span>;
+      case "snapchat":
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">Snapchat Spotlight</span>;
       default:
-        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">Video Link</span>;
+        return <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">Universal Link</span>;
     }
   };
 
@@ -132,15 +144,20 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
-                URL Video Target *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-medium text-slate-300">
+                  URL Video Target (Platform Manapun) *
+                </label>
+                <span className="text-[10px] text-sky-400 font-mono">
+                  TikTok, IG, YT, FB, X, Threads, dll.
+                </span>
+              </div>
               <input
-                type="url"
+                type="text"
                 required
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="https://www.tiktok.com/@user/video/..."
+                placeholder="https://... atau tiktok.com, instagram.com/reel, dsb."
                 className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
               />
             </div>

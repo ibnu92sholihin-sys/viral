@@ -195,12 +195,30 @@ export function isWithinMaintenanceWindow(
   }
 }
 
-// Detect Platform helper
-function detectPlatform(url: string): "tiktok" | "instagram" | "youtube" | "generic" {
-  const lower = url.toLowerCase();
-  if (lower.includes("tiktok.com")) return "tiktok";
+// Universal URL cleaner & normalizer helper
+export function normalizeUrl(input: string): string {
+  let cleaned = (input || "").trim();
+  // If user pasted without protocol (e.g. tiktok.com/@user/video/123 or vm.tiktok.com/...), prepend https://
+  if (!/^https?:\/\//i.test(cleaned)) {
+    cleaned = `https://${cleaned}`;
+  }
+  return cleaned;
+}
+
+// Detect Platform helper with universal social media detection
+export function detectPlatform(
+  url: string
+): "tiktok" | "instagram" | "youtube" | "facebook" | "twitter" | "threads" | "linkedin" | "pinterest" | "snapchat" | "generic" {
+  const lower = (url || "").toLowerCase();
+  if (lower.includes("tiktok.com") || lower.includes("douyin.com")) return "tiktok";
   if (lower.includes("instagram.com") || lower.includes("instagr.am")) return "instagram";
   if (lower.includes("youtube.com") || lower.includes("youtu.be")) return "youtube";
+  if (lower.includes("facebook.com") || lower.includes("fb.watch") || lower.includes("fb.com")) return "facebook";
+  if (lower.includes("twitter.com") || lower.includes("x.com") || lower.includes("t.co")) return "twitter";
+  if (lower.includes("threads.net")) return "threads";
+  if (lower.includes("linkedin.com") || lower.includes("lnkd.in")) return "linkedin";
+  if (lower.includes("pinterest.com") || lower.includes("pin.it")) return "pinterest";
+  if (lower.includes("snapchat.com")) return "snapchat";
   return "generic";
 }
 
@@ -331,25 +349,26 @@ app.post("/api/tasks", (req, res) => {
       return res.status(400).json({ success: false, error: "URL target tidak boleh kosong." });
     }
 
+    const normalizedUrl = normalizeUrl(url);
     const minSec = Math.max(5, Number(minIntervalSec) || 15);
     const maxSec = Math.max(minSec, Number(maxIntervalSec) || 60);
     const comments = Math.max(0, Number(targetComments) || 50);
     const projections = hitungProyeksiEngagement(comments);
     const id = "task-" + Date.now().toString(36);
-    const platform = detectPlatform(url);
+    const platform = detectPlatform(normalizedUrl);
 
     const randomFirstInterval = Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec;
     const nextRun = new Date(Date.now() + randomFirstInterval * 1000).toISOString();
 
-    let safeLabel = url.trim().slice(-12);
+    let safeLabel = normalizedUrl.slice(-12);
     try {
-      const parsedUrl = new URL(url.includes("://") ? url : `https://${url}`);
-      safeLabel = parsedUrl.pathname.slice(-10) || parsedUrl.hostname;
+      const parsedUrl = new URL(normalizedUrl);
+      safeLabel = parsedUrl.pathname.slice(-14) || parsedUrl.hostname;
     } catch (_) {}
 
     const newTask: ScheduledTask = {
       id,
-      url: url.trim(),
+      url: normalizedUrl,
       platform,
       title: title?.trim() || `${platform.toUpperCase()} Target (${safeLabel})`,
       status: "running",

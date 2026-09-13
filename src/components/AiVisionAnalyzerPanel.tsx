@@ -8,22 +8,28 @@ interface AiVisionAnalyzerPanelProps {
 
 const SAMPLE_PRESETS = [
   {
-    name: "Edukasi & Tutorial Algoritma",
+    name: "TikTok - Edukasi & Tutorial Algoritma",
     url: "https://www.tiktok.com/@edukasi_kreatif/video/73918291039",
     thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60",
     desc: "Video penjelasan konsep teknologi dan strategi konten visual.",
   },
   {
-    name: "Review & Unboxing Produk",
+    name: "Instagram Reels - Review Produk & Estetika",
     url: "https://www.instagram.com/reel/C8921890123",
     thumbnail: "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=500&auto=format&fit=crop&q=60",
     desc: "Video visual unboxing gadget dengan pencahayaan studio.",
   },
   {
-    name: "Vlog Pagi & Gaya Hidup",
+    name: "YouTube Shorts - Vlog Gaya Hidup & Alam",
     url: "https://www.youtube.com/shorts/k92019a829a",
     thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60",
     desc: "Pemandangan luar ruangan dengan tone warna hangat dan alami.",
+  },
+  {
+    name: "Facebook / X / Threads / LinkedIn Video",
+    url: "https://fb.watch/videoSample1029",
+    thumbnail: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500&auto=format&fit=crop&q=60",
+    desc: "Format video narasi bisnis atau edukasi lintas jejaring sosial.",
   },
 ];
 
@@ -110,15 +116,20 @@ export const AiVisionAnalyzerPanel: React.FC<AiVisionAnalyzerPanelProps> = ({
         <div className="lg:col-span-5 space-y-4">
           {/* Target URL */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              URL Video Sasaran
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                URL Video Sasaran
+              </label>
+              <span className="text-[10px] text-sky-400 font-mono">
+                Semua Platform Didukung
+              </span>
+            </div>
             <div className="relative">
               <input
-                type="url"
+                type="text"
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="https://www.tiktok.com/@creator/video/..."
+                placeholder="https://... (TikTok, Reels, Shorts, FB, X, dll)"
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
               />
               <Video className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />

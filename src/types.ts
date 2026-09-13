@@ -21,7 +21,7 @@ export interface VideoAnalysis {
 export interface ScheduledTask {
   id: string;
   url: string;
-  platform: "tiktok" | "instagram" | "youtube" | "generic";
+  platform: "tiktok" | "instagram" | "youtube" | "facebook" | "twitter" | "threads" | "linkedin" | "pinterest" | "snapchat" | "generic";
   title: string;
   status: "running" | "paused" | "maintenance";
   minIntervalSec: number;
