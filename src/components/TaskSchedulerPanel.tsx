@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Play, Pause, Trash2, Plus, ExternalLink, RefreshCw, Clock, Moon, ShieldCheck, AlertCircle, Sparkles, Layers } from "lucide-react";
-import { ScheduledTask } from "../types";
+import React, { useState, useEffect, useRef } from "react";
+import { Play, Pause, Trash2, Plus, ExternalLink, RefreshCw, Clock, Moon, ShieldCheck, AlertCircle, Sparkles, Layers, CheckCircle2, Loader2, Video, Eye, Heart, Bookmark, Zap, Share2 } from "lucide-react";
+import { ScheduledTask, PreviewResult } from "../types";
 
 interface TaskSchedulerPanelProps {
   tasks: ScheduledTask[];
@@ -16,6 +16,7 @@ interface TaskSchedulerPanelProps {
     maintenanceEndHour: number;
   }) => Promise<void>;
   onInspectAnalysis?: (task: ScheduledTask) => void;
+  onRefreshTasks?: () => Promise<void> | void;
 }
 
 export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
@@ -24,6 +25,7 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
   onDeleteTask,
   onCreateTask,
   onInspectAnalysis,
+  onRefreshTasks,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -38,10 +40,92 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
   const [maintEnd, setMaintEnd] = useState(4);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Preview-First Validation States
+  const [isCheckingPreview, setIsCheckingPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<PreviewResult | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [isTriggeringCron, setIsTriggeringCron] = useState(false);
+  const [cronFeedback, setCronFeedback] = useState<string | null>(null);
+
+  const handleTriggerCronQueue = async () => {
+    setIsTriggeringCron(true);
+    setCronFeedback(null);
+    try {
+      const res = await fetch("/api/cron/process-queue?force=true", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        setCronFeedback(data.message || `Berhasil mengeksekusi antrean cron!`);
+        if (onRefreshTasks) await onRefreshTasks();
+        setTimeout(() => setCronFeedback(null), 4000);
+      } else {
+        setCronFeedback("Gagal: " + (data.error || "Terjadi kesalahan"));
+      }
+    } catch (err: any) {
+      setCronFeedback("Gagal memproses cron: " + err.message);
+    } finally {
+      setIsTriggeringCron(false);
+    }
+  };
+  useEffect(() => {
+    const trimmed = urlInput.trim();
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (!trimmed) {
+      setPreviewData(null);
+      setIsCheckingPreview(false);
+      setErrorMsg(null);
+      return;
+    }
+
+    setIsCheckingPreview(true);
+    setErrorMsg(null);
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/preview/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: trimmed }),
+        });
+        const data: PreviewResult = await res.json();
+        setPreviewData(data);
+        if (!data.valid) {
+          setErrorMsg(data.error_message || "Link tidak dikenali, pastikan link publik dan aktif.");
+        } else {
+          setErrorMsg(null);
+          // Autofill title if user has not typed one
+          if (!titleInput.trim() && data.title) {
+            setTitleInput(data.title);
+          }
+        }
+      } catch (err: any) {
+        setPreviewData({ valid: false, error_message: "Gagal memverifikasi preview video." });
+        setErrorMsg("Link tidak dikenali, pastikan link publik dan aktif.");
+      } finally {
+        setIsCheckingPreview(false);
+      }
+    }, 500);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [urlInput]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!urlInput.trim()) {
       setErrorMsg("URL video sasaran wajib diisi.");
+      return;
+    }
+
+    // Strict Preview-First condition: preview MUST be valid!
+    if (!previewData || !previewData.valid) {
+      setErrorMsg("Link tidak dikenali, pastikan link publik dan aktif.");
       return;
     }
 
@@ -54,9 +138,30 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
     setErrorMsg(null);
 
     try {
+      // Call /api/campaign/start (or create task with validated preview)
+      const res = await fetch("/api/campaign/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          video_url: urlInput.trim(),
+          title: titleInput.trim() || previewData.title || `Target (${urlInput.slice(-10)})`,
+          targetComments: Number(targetCommentsInput) || 50,
+          minIntervalSec: Number(minIntervalSec),
+          maxIntervalSec: Number(maxIntervalSec),
+          maintenanceStartHour: Number(maintStart),
+          maintenanceEndHour: Number(maintEnd),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Gagal meluncurkan campaign.");
+      }
+
+      // Reset form & notify parent
       await onCreateTask({
         url: urlInput.trim(),
-        title: titleInput.trim() || `Konten Target (${urlInput.slice(-10)})`,
+        title: titleInput.trim() || previewData.title || `Target (${urlInput.slice(-10)})`,
         targetComments: Number(targetCommentsInput) || 50,
         minIntervalSec: Number(minIntervalSec),
         maxIntervalSec: Number(maxIntervalSec),
@@ -64,12 +169,12 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
         maintenanceEndHour: Number(maintEnd),
       });
 
-      // Reset form
       setUrlInput("");
       setTitleInput("");
+      setPreviewData(null);
       setShowAddForm(false);
     } catch (err: any) {
-      setErrorMsg(err.message || "Gagal menambahkan task.");
+      setErrorMsg(err.message || "Link tidak dikenali, pastikan link publik dan aktif.");
     } finally {
       setIsCreating(false);
     }
@@ -118,14 +223,43 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-semibold shadow-sm shadow-sky-500/20 transition-all self-start sm:self-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{showAddForm ? "Tutup Form" : "Tambah URL Target Baru"}</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+          <button
+            onClick={handleTriggerCronQueue}
+            disabled={isTriggeringCron}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
+            title="Picu Vercel Cron Job secara manual untuk memproses antrean sekarang"
+          >
+            {isTriggeringCron ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+            )}
+            <span>Picu Cron Antrean</span>
+          </button>
+
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-semibold shadow-sm shadow-sky-500/20 transition-all"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{showAddForm ? "Tutup Form" : "Tambah URL Target Baru"}</span>
+          </button>
+        </div>
       </div>
+
+      {/* Cron Feedback Notification */}
+      {cronFeedback && (
+        <div className="mb-4 px-4 py-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs flex items-center justify-between animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-amber-400" />
+            <span>{cronFeedback}</span>
+          </div>
+          <button onClick={() => setCronFeedback(null)} className="text-slate-400 hover:text-white text-[11px]">
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Add New Task Form Modal / Accordion */}
       {showAddForm && (
@@ -172,6 +306,72 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
                 <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">youtu.be / shorts</span>
                 <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">fb.watch</span>
               </div>
+
+              {/* Realtime Preview-First Visual Feedback Box */}
+              {urlInput.trim() && (
+                <div className="mt-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                  {isCheckingPreview ? (
+                    <div className="flex items-center gap-2 text-xs text-sky-400 py-2">
+                      <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                      <span>Memeriksa dan mengekstrak visual video preview...</span>
+                    </div>
+                  ) : previewData?.valid ? (
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+                          <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          <span>Preview Video Berhasil Diverifikasi ({previewData.platform?.toUpperCase()})</span>
+                        </div>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+                          Siap Kampanye
+                        </span>
+                      </div>
+
+                      {/* Video Embed Player or Thumbnail */}
+                      <div className="relative rounded-lg overflow-hidden border border-slate-700 bg-black aspect-video max-h-48 flex items-center justify-center">
+                        {previewData.embed_url ? (
+                          <iframe
+                            src={previewData.embed_url}
+                            title="Video Preview Embed"
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-same-origin allow-presentation"
+                          />
+                        ) : previewData.thumbnail ? (
+                          <div className="relative w-full h-full">
+                            <img
+                              src={previewData.thumbnail}
+                              alt="Video Thumbnail"
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2.5">
+                              <span className="text-[11px] text-white font-medium truncate">
+                                {previewData.title || urlInput}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-xs text-slate-400 flex items-center gap-2">
+                            <Video className="h-4 w-4 text-sky-400" />
+                            <span>Media terverifikasi dan siap diproses</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+                      <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold">Link tidak dikenali, pastikan link publik dan aktif.</p>
+                        <p className="text-[11px] text-rose-300/80 mt-0.5">
+                          Sistem Preview-First hanya mengizinkan video yang dapat diakses secara publik.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
@@ -285,10 +485,25 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isCreating}
-              className="px-5 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white text-xs font-semibold shadow-sm shadow-sky-500/20 transition-all disabled:opacity-50"
+              disabled={isCreating || isCheckingPreview || !previewData?.valid}
+              className="px-5 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white text-xs font-semibold shadow-sm shadow-sky-500/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
-              {isCreating ? "Menyimpan..." : "Mulai Scheduler"}
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Memulai Campaign...</span>
+                </>
+              ) : isCheckingPreview ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Memverifikasi Preview...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                  <span>Start Campaign</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -302,126 +517,204 @@ export const TaskSchedulerPanel: React.FC<TaskSchedulerPanelProps> = ({
           </div>
         ) : (
           tasks.map((task) => {
-            const isRunning = task.status === "running";
+            const isRunning = task.status === "running" || (task.status as string) === "active";
             const isMaint = task.status === "maintenance";
+            const isCompleted = task.status === "completed";
+            const currComments = task.currentComments || 0;
+            const targetComments = task.targetComments || 50;
+            const commentPct = Math.min(100, Math.round((currComments / targetComments) * 100));
 
             return (
               <div
                 key={task.id}
-                className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-slate-700 transition-all flex flex-col gap-3.5"
               >
-                {/* Left side details */}
-                <div className="space-y-1.5 min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {getPlatformBadge(task.platform)}
-                    <h3 className="font-semibold text-sm text-white truncate max-w-md">
-                      {task.title}
-                    </h3>
-                    {/* Status badge */}
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 ${
+                {/* Top row: Thumbnail/Avatar + Title + Status + Action Controls */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    {/* Thumbnail or Video Platform Icon */}
+                    {task.thumbnail ? (
+                      <img
+                        src={task.thumbnail}
+                        alt="Media Preview"
+                        className="w-12 h-12 rounded-lg object-cover border border-slate-700 shrink-0"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 text-slate-400">
+                        <Video className="h-5 w-5 text-sky-400" />
+                      </div>
+                    )}
+
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {getPlatformBadge(task.platform)}
+                        <h3 className="font-semibold text-sm text-white truncate max-w-md">
+                          {task.title}
+                        </h3>
+                        {/* Status badge */}
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 ${
+                            isCompleted
+                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                              : isRunning
+                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                              : isMaint
+                              ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                              : "bg-slate-800 text-slate-400 border border-slate-700"
+                          }`}
+                        >
+                          {isRunning && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          )}
+                          {isMaint && (
+                            <Moon className="h-2.5 w-2.5 text-amber-400" />
+                          )}
+                          {isCompleted && (
+                            <CheckCircle2 className="h-2.5 w-2.5 text-purple-400" />
+                          )}
+                          {isCompleted
+                            ? "Target Tercapai (Selesai)"
+                            : isRunning
+                            ? "Aktif Berjalan"
+                            : isMaint
+                            ? "Dalam Jam Tidur (Maint)"
+                            : "Dihentikan (Paused)"}
+                        </span>
+                      </div>
+
+                      {/* URL link */}
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                        <span className="truncate max-w-xs sm:max-w-md font-mono text-[11px]">
+                          {task.url}
+                        </span>
+                        <a
+                          href={task.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sky-400 hover:text-sky-300"
+                          title="Buka link di tab baru"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right side controls */}
+                  <div className="flex items-center gap-2 shrink-0 self-end md:self-center flex-wrap">
+                    {/* Trigger 1 cycle immediate button */}
+                    <button
+                      onClick={handleTriggerCronQueue}
+                      disabled={isTriggeringCron}
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs font-medium flex items-center gap-1 transition-colors"
+                      title="Picu 1 siklus interaksi sekarang via endpoint /api/cron/process-queue"
+                    >
+                      <Zap className="h-3 w-3 fill-current text-amber-400" />
+                      <span>Siklus</span>
+                    </button>
+
+                    {onInspectAnalysis && (
+                      <button
+                        onClick={() => onInspectAnalysis(task)}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-sky-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors"
+                        title="Lihat Rekomendasi AI"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                        <span>Analisis AI</span>
+                      </button>
+                    )}
+
+                    {/* Toggle Start / Pause */}
+                    <button
+                      onClick={() => onToggleTask(task.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                         isRunning
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : isMaint
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                          : "bg-slate-800 text-slate-400 border border-slate-700"
+                          ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                          : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/20"
                       }`}
                     >
-                      {isRunning && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {isRunning ? (
+                        <>
+                          <Pause className="h-3.5 w-3.5" />
+                          <span>Hentikan</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-3.5 w-3.5" />
+                          <span>Jalankan</span>
+                        </>
                       )}
-                      {isMaint && (
-                        <Moon className="h-2.5 w-2.5 text-amber-400" />
-                      )}
-                      {isRunning
-                        ? "Aktif Berjalan"
-                        : isMaint
-                        ? "Dalam Jam Tidur (Maint)"
-                        : "Dihentikan (Paused)"}
-                    </span>
-                  </div>
+                    </button>
 
-                  {/* URL link */}
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <span className="truncate max-w-xs sm:max-w-md font-mono text-[11px]">
-                      {task.url}
-                    </span>
-                    <a
-                      href={task.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sky-400 hover:text-sky-300"
-                      title="Buka link di tab baru"
+                    {/* Delete button */}
+                    <button
+                      onClick={() => onDeleteTask(task.id)}
+                      className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 border border-slate-800 hover:border-rose-500/30 transition-colors"
+                      title="Hapus task ini"
                     >
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-
-                  {/* Operational parameters */}
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400 pt-1 flex-wrap font-mono">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-sky-400" />
-                      Jeda: {task.minIntervalSec}-{task.maxIntervalSec}s
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Moon className="h-3 w-3 text-amber-400" />
-                      Maint: {task.maintenanceStartHour}:00 - {task.maintenanceEndHour}:00
-                    </span>
-                    <span>•</span>
-                    <span className="text-emerald-400">
-                      Siklus: <strong>#{task.totalCycles}</strong>
-                    </span>
-                    <span>•</span>
-                    <span className="text-slate-300">
-                      Next: {task.nextRunAt ? new Date(task.nextRunAt).toLocaleTimeString() : "-"}
-                    </span>
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
-                {/* Right side controls */}
-                <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                  {onInspectAnalysis && (
-                    <button
-                      onClick={() => onInspectAnalysis(task)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-sky-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors"
-                      title="Lihat Rekomendasi AI"
-                    >
-                      <Sparkles className="h-3.5 w-3.5 text-sky-400" />
-                      <span>Analisis AI</span>
-                    </button>
-                  )}
+                {/* Bottom row: Live Engagement Metrics & Progress Bar */}
+                <div className="pt-2 border-t border-slate-900 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  {/* Comments Progress */}
+                  <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80 space-y-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-slate-400">Target Komentar</span>
+                      <span className="font-semibold text-white font-mono">
+                        {currComments} / {targetComments} ({commentPct}%)
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-sky-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                        style={{ width: `${commentPct}%` }}
+                      />
+                    </div>
+                  </div>
 
-                  {/* Toggle Start / Pause */}
-                  <button
-                    onClick={() => onToggleTask(task.id)}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                      isRunning
-                        ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                        : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/20"
-                    }`}
-                  >
-                    {isRunning ? (
-                      <>
-                        <Pause className="h-3.5 w-3.5" />
-                        <span>Hentikan</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-3.5 w-3.5" />
-                        <span>Jalankan</span>
-                      </>
-                    )}
-                  </button>
+                  {/* Views Metric */}
+                  <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                      <Eye className="h-3.5 w-3.5 text-teal-400" />
+                      <span>Tayangan (Views)</span>
+                    </div>
+                    <span className="font-mono font-bold text-teal-300 text-xs">
+                      {(task.currentViews || 0).toLocaleString()}
+                    </span>
+                  </div>
 
-                  {/* Delete button */}
-                  <button
-                    onClick={() => onDeleteTask(task.id)}
-                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 border border-slate-800 hover:border-rose-500/30 transition-colors"
-                    title="Hapus task ini"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  {/* Likes & Saves Metric */}
+                  <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <Heart className="h-3.5 w-3.5 text-pink-400" />
+                        <strong className="text-pink-300 font-mono">{task.currentLikes || 0}</strong>
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Bookmark className="h-3 w-3 text-amber-400" />
+                        <strong className="text-amber-300 font-mono">{task.currentSaves || 0}</strong>
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Rasio Aman
+                    </span>
+                  </div>
+
+                  {/* Schedule info */}
+                  <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-400 flex items-center gap-1">
+                      <Clock className="h-3 w-3 text-sky-400" />
+                      Siklus #{task.totalCycles}
+                    </span>
+                    <span className="font-mono text-slate-300 text-[10px]">
+                      Next: {task.nextRunAt ? new Date(task.nextRunAt).toLocaleTimeString() : "-"}
+                    </span>
+                  </div>
                 </div>
               </div>
             );

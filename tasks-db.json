@@ -20,9 +20,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 61,
-    "lastRunAt": "2026-09-13T15:39:56.070Z",
-    "nextRunAt": "2026-09-13T15:40:17.070Z",
+    "totalCycles": 83,
+    "lastRunAt": "2026-09-13T15:47:28.393Z",
+    "nextRunAt": "2026-09-13T15:47:53.393Z",
     "analysis": {
       "objects": [
         "Presenter edukasi",
@@ -68,9 +68,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 14,
-    "lastRunAt": "2026-09-13T15:39:35.069Z",
-    "nextRunAt": "2026-09-13T15:40:31.069Z",
+    "totalCycles": 24,
+    "lastRunAt": "2026-09-13T15:46:44.357Z",
+    "nextRunAt": "2026-09-13T15:47:41.357Z",
     "createdAt": "2026-09-13T15:30:46.696Z"
   },
   {
@@ -94,9 +94,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 13,
-    "lastRunAt": "2026-09-13T15:39:53.069Z",
-    "nextRunAt": "2026-09-13T15:40:41.069Z",
+    "totalCycles": 24,
+    "lastRunAt": "2026-09-13T15:47:19.390Z",
+    "nextRunAt": "2026-09-13T15:48:07.390Z",
     "createdAt": "2026-09-13T15:30:55.365Z"
   },
   {
@@ -120,9 +120,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 0,
-    "lastRunAt": null,
-    "nextRunAt": "2026-09-13T15:40:42.635Z",
+    "totalCycles": 12,
+    "lastRunAt": "2026-09-13T15:46:56.361Z",
+    "nextRunAt": "2026-09-13T15:47:43.361Z",
     "createdAt": "2026-09-13T15:39:53.635Z"
   },
   {
@@ -146,9 +146,9 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
-    "totalCycles": 0,
-    "lastRunAt": null,
-    "nextRunAt": "2026-09-13T15:40:34.748Z",
+    "totalCycles": 11,
+    "lastRunAt": "2026-09-13T15:47:08.365Z",
+    "nextRunAt": "2026-09-13T15:47:48.365Z",
     "createdAt": "2026-09-13T15:39:56.748Z"
   },
   {
@@ -172,9 +172,35 @@
       "commentToViewRatio": "5.0%",
       "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
     },
+    "totalCycles": 13,
+    "lastRunAt": "2026-09-13T15:46:44.357Z",
+    "nextRunAt": "2026-09-13T15:47:43.357Z",
+    "createdAt": "2026-09-13T15:39:58.719Z"
+  },
+  {
+    "id": "campaign-mtzzmnu1",
+    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "platform": "youtube",
+    "title": "YouTube Video (dQw4w9WgXcQ)",
+    "status": "running",
+    "minIntervalSec": 15,
+    "maxIntervalSec": 60,
+    "maintenanceStartHour": 1,
+    "maintenanceEndHour": 4,
+    "targetComments": 50,
+    "projections": {
+      "targetKomentar": 50,
+      "min_views": 1000,
+      "min_likes": 150,
+      "min_saves": 40,
+      "min_shares": 20,
+      "safetyScore": 98,
+      "commentToViewRatio": "5.0%",
+      "statusMessage": "Rasio seimbang & aman untuk memicu distribusi organik algoritma."
+    },
     "totalCycles": 0,
     "lastRunAt": null,
-    "nextRunAt": "2026-09-13T15:40:27.719Z",
-    "createdAt": "2026-09-13T15:39:58.719Z"
+    "nextRunAt": "2026-09-13T15:48:21.897Z",
+    "createdAt": "2026-09-13T15:47:37.897Z"
   }
 ]

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Sparkles, Video, Eye, Palette, Compass, MessageSquare, Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { VideoAnalysis } from "../types";
+import { VideoAnalysis, PreviewResult } from "../types";
 
 interface AiVisionAnalyzerPanelProps {
   onStrategyGenerated?: (analysis: VideoAnalysis, videoUrl: string) => void;
@@ -41,6 +41,49 @@ export const AiVisionAnalyzerPanel: React.FC<AiVisionAnalyzerPanelProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<VideoAnalysis | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isVerifyingPreview, setIsVerifyingPreview] = useState(false);
+  const [previewInfo, setPreviewInfo] = useState<PreviewResult | null>(null);
+  const previewDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounced capability check for URL in AiVision
+  useEffect(() => {
+    const trimmed = videoUrl.trim();
+    if (previewDebounceRef.current) {
+      clearTimeout(previewDebounceRef.current);
+    }
+
+    if (!trimmed) {
+      setPreviewInfo(null);
+      setIsVerifyingPreview(false);
+      return;
+    }
+
+    setIsVerifyingPreview(true);
+    previewDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/preview/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: trimmed }),
+        });
+        const data: PreviewResult = await res.json();
+        setPreviewInfo(data);
+        if (data.valid && data.thumbnail && !selectedImage) {
+          setSelectedImage(data.thumbnail);
+        }
+      } catch (_) {
+        setPreviewInfo({ valid: false, error_message: "Link tidak dikenali, pastikan link publik dan aktif." });
+      } finally {
+        setIsVerifyingPreview(false);
+      }
+    }, 500);
+
+    return () => {
+      if (previewDebounceRef.current) {
+        clearTimeout(previewDebounceRef.current);
+      }
+    };
+  }, [videoUrl]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -145,6 +188,40 @@ export const AiVisionAnalyzerPanel: React.FC<AiVisionAnalyzerPanelProps> = ({
               <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">instagram.com/reel/...</span>
               <span className="px-1.5 py-0.5 rounded bg-slate-800/80 font-mono text-slate-300 border border-slate-700">youtube.com/shorts/...</span>
             </div>
+
+            {/* Preview-First Visual Feedback */}
+            {videoUrl.trim() && (
+              <div className="mt-2.5 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+                {isVerifyingPreview ? (
+                  <div className="flex items-center gap-2 text-sky-400 py-1">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+                    <span>Mengekstrak visual preview video...</span>
+                  </div>
+                ) : previewInfo?.valid ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                      <span>Video Terverifikasi ({previewInfo.platform?.toUpperCase()}): Siap Dianalisis AI</span>
+                    </div>
+                    {previewInfo.embed_url && (
+                      <div className="relative rounded-lg overflow-hidden border border-slate-800 aspect-video max-h-36 bg-black">
+                        <iframe
+                          src={previewInfo.embed_url}
+                          title="Embed Preview"
+                          className="w-full h-full border-0"
+                          sandbox="allow-scripts allow-same-origin allow-presentation"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-rose-400 text-[11px]">
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                    <span>Link tidak dikenali, pastikan link publik dan aktif.</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Preset Buttons */}

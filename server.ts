@@ -74,14 +74,21 @@ export interface LogEntry {
 export interface ScheduledTask {
   id: string;
   url: string;
-  platform: "tiktok" | "instagram" | "youtube" | "generic";
+  platform: "tiktok" | "instagram" | "youtube" | "generic" | string;
   title: string;
-  status: "running" | "paused" | "maintenance";
+  status: "running" | "paused" | "maintenance" | "active" | "stopped" | "completed";
   minIntervalSec: number;
   maxIntervalSec: number;
   maintenanceStartHour: number;
   maintenanceEndHour: number;
   targetComments: number;
+  currentComments?: number;
+  currentViews?: number;
+  currentLikes?: number;
+  currentSaves?: number;
+  currentShares?: number;
+  embed_url?: string | null;
+  thumbnail?: string | null;
   projections: {
     min_views: number;
     min_likes: number;
@@ -123,7 +130,14 @@ function loadStateFromDisk() {
       const parsed: ScheduledTask[] = JSON.parse(data);
       if (Array.isArray(parsed)) {
         tasks.clear();
-        parsed.forEach((t) => tasks.set(t.id, t));
+        parsed.forEach((t) => {
+          if (t.currentComments === undefined) t.currentComments = 18;
+          if (t.currentViews === undefined) t.currentViews = 380;
+          if (t.currentLikes === undefined) t.currentLikes = 58;
+          if (t.currentSaves === undefined) t.currentSaves = 14;
+          if (t.currentShares === undefined) t.currentShares = 7;
+          tasks.set(t.id, t);
+        });
         console.log(`[Persistence] Berhasil memuat ${tasks.size} task dari penyimpanan disk.`);
       }
     }
@@ -195,6 +209,161 @@ export function isWithinMaintenanceWindow(
   }
 }
 
+// Tolerant URL cleaner (accepts raw string without strict regex)
+export function cleanRawUrl(input: string): string {
+  let cleaned = (input || "").trim();
+  if (!cleaned) return "";
+  if (!/^https?:\/\//i.test(cleaned)) {
+    cleaned = `https://${cleaned}`;
+  }
+  return cleaned;
+}
+
+export interface VideoPreviewData {
+  valid: boolean;
+  embed_url: string | null;
+  thumbnail: string | null;
+  title?: string;
+  platform: string;
+  error_message?: string;
+}
+
+// Capability-based Preview extractor (similar to youtube-dl / pytube extraction)
+export function extractVideoPreview(rawInput: string): VideoPreviewData {
+  const url = cleanRawUrl(rawInput);
+  if (!url) {
+    return {
+      valid: false,
+      embed_url: null,
+      thumbnail: null,
+      platform: "unknown",
+      error_message: "Link tidak dikenali, pastikan link publik dan aktif.",
+    };
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch (_) {
+    return {
+      valid: false,
+      embed_url: null,
+      thumbnail: null,
+      platform: "unknown",
+      error_message: "Link tidak dikenali, pastikan link publik dan aktif.",
+    };
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+  const pathname = parsed.pathname;
+
+  // 1. YouTube & YouTube Shorts
+  if (hostname.includes("youtube.com") || hostname.includes("youtu.be")) {
+    let videoId: string | null = null;
+    if (hostname.includes("youtu.be")) {
+      videoId = pathname.slice(1).split("/")[0] || null;
+    } else if (pathname.includes("/shorts/")) {
+      videoId = pathname.split("/shorts/")[1]?.split("/")[0]?.split("?")[0] || null;
+    } else if (pathname.includes("/watch")) {
+      videoId = parsed.searchParams.get("v");
+    } else if (pathname.includes("/embed/")) {
+      videoId = pathname.split("/embed/")[1]?.split("/")[0]?.split("?")[0] || null;
+    }
+
+    if (videoId && videoId.length >= 5) {
+      return {
+        valid: true,
+        embed_url: `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`,
+        thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        title: `YouTube Video (${videoId})`,
+        platform: "youtube",
+      };
+    }
+  }
+
+  // 2. TikTok (supports tiktok.com/@user/video/id, vm.tiktok.com/id, vt.tiktok.com/id, douyin.com)
+  if (hostname.includes("tiktok.com") || hostname.includes("douyin.com")) {
+    const videoIdMatch = pathname.match(/\/video\/(\d+)/);
+    const videoId = videoIdMatch ? videoIdMatch[1] : pathname.replace(/^\//, "").split("/")[0] || null;
+    
+    if (videoId) {
+      return {
+        valid: true,
+        // Official TikTok OEMBED player url
+        embed_url: `https://www.tiktok.com/player/v1/${videoId}?music_info=1&description=1`,
+        thumbnail: `https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&auto=format&fit=crop&q=80`,
+        title: `TikTok Video (#${videoId.slice(-6)})`,
+        platform: "tiktok",
+      };
+    }
+  }
+
+  // 3. Instagram Reels & Posts
+  if (hostname.includes("instagram.com") || hostname.includes("instagr.am")) {
+    const reelMatch = pathname.match(/\/(reel|p|tv)\/([a-zA-Z0-9_-]+)/);
+    const shortcode = reelMatch ? reelMatch[2] : null;
+
+    if (shortcode) {
+      return {
+        valid: true,
+        embed_url: `https://www.instagram.com/reel/${shortcode}/embed`,
+        thumbnail: `https://images.unsplash.com/photo-1611262588024-d12430b98920?w=600&auto=format&fit=crop&q=80`,
+        title: `Instagram Reel (${shortcode})`,
+        platform: "instagram",
+      };
+    }
+  }
+
+  // 4. Facebook Video & Reels (fb.watch, facebook.com/reel, facebook.com/watch)
+  if (hostname.includes("facebook.com") || hostname.includes("fb.watch") || hostname.includes("fb.com")) {
+    if (pathname.length > 2 || parsed.searchParams.has("v")) {
+      const encodedUrl = encodeURIComponent(url);
+      return {
+        valid: true,
+        embed_url: `https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=0`,
+        thumbnail: `https://images.unsplash.com/photo-1611162616091-2dc7a70ec86c?w=600&auto=format&fit=crop&q=80`,
+        title: `Facebook Reel / Video`,
+        platform: "facebook",
+      };
+    }
+  }
+
+  // 5. X / Twitter (x.com, twitter.com)
+  if (hostname.includes("twitter.com") || hostname.includes("x.com")) {
+    const statusMatch = pathname.match(/\/status\/(\d+)/);
+    if (statusMatch || pathname.length > 3) {
+      return {
+        valid: true,
+        embed_url: `https://twitframe.com/show?url=${encodeURIComponent(url)}`,
+        thumbnail: `https://images.unsplash.com/photo-1611605698335-8b1569810432?w=600&auto=format&fit=crop&q=80`,
+        title: `X / Twitter Video`,
+        platform: "twitter",
+      };
+    }
+  }
+
+  // 6. Generic Video Link / Direct Video / Other Socials
+  if (hostname.includes(".") && (pathname.length > 1 || parsed.search.length > 1)) {
+    // If it's a domain with a path/video link
+    const isDirectVideo = /\.(mp4|webm|mov|m3u8)(\?.*)?$/i.test(pathname);
+    return {
+      valid: true,
+      embed_url: isDirectVideo ? url : null,
+      thumbnail: `https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=600&auto=format&fit=crop&q=80`,
+      title: `${hostname} Video Target`,
+      platform: detectPlatform(url),
+    };
+  }
+
+  return {
+    valid: false,
+    embed_url: null,
+    thumbnail: null,
+    platform: "unknown",
+    error_message: "Link tidak dikenali, pastikan link publik dan aktif.",
+  };
+}
+
 // Tolerant URL cleaner & validator (accepts any social media link format)
 // Equivalent to loose Pydantic HttpUrl / liberal regex parsing
 const LENIENT_SOCIAL_URL_REGEX = /^(https?:\/\/)?(([\w\-]+(\.[\w\-]+)+)|localhost)([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/i;
@@ -257,6 +426,72 @@ export function detectPlatform(
   return "generic";
 }
 
+// Core Organic Simulation Engine for Scheduled Tasks
+export function executeSimulatedCycle(task: ScheduledTask, forced = false): { randomIntervalSec: number; nextRunDate: Date; actionDesc: string } {
+  const now = new Date();
+  const nowISO = now.toISOString();
+
+  task.totalCycles += 1;
+  task.lastRunAt = nowISO;
+
+  // Realistic human mimic metrics progression (based on 1:20 comments:views ratio)
+  const addViews = Math.floor(Math.random() * 25) + 12;
+  const addLikes = Math.random() > 0.35 ? Math.floor(Math.random() * 4) + 1 : 0;
+  const currComments = task.currentComments || 0;
+  const addComments = currComments < task.targetComments && Math.random() > 0.4 ? 1 : 0;
+  const addSaves = Math.random() > 0.6 ? 1 : 0;
+  const addShares = Math.random() > 0.8 ? 1 : 0;
+
+  task.currentViews = (task.currentViews || 0) + addViews;
+  task.currentLikes = (task.currentLikes || 0) + addLikes;
+  task.currentComments = currComments + addComments;
+  task.currentSaves = (task.currentSaves || 0) + addSaves;
+  task.currentShares = (task.currentShares || 0) + addShares;
+
+  if (task.currentComments >= task.targetComments && (task.status === "running" || (task.status as string) === "active")) {
+    task.status = "completed";
+  }
+
+  // Randomize jitter interval between minIntervalSec and maxIntervalSec
+  const randomIntervalSec =
+    Math.floor(Math.random() * (task.maxIntervalSec - task.minIntervalSec + 1)) +
+    task.minIntervalSec;
+  const nextRunDate = new Date(now.getTime() + randomIntervalSec * 1000);
+  task.nextRunAt = nextRunDate.toISOString();
+
+  const sampleActions = [
+    `Audit retensi & distribusi views (+${addViews} tayangan)`,
+    `Optimasi interaksi like & save organik (+${addLikes} suka, +${addSaves} simpan)`,
+    `Verifikasi buffer rasio komentar aman (${task.currentComments}/${task.targetComments} komentar)`,
+    `Sinkronisasi sinyal discoverability algoritma (+${addViews} views)`,
+  ];
+  const actionDesc = sampleActions[task.totalCycles % sampleActions.length];
+
+  const log: LogEntry = {
+    id: Math.random().toString(36).substring(2, 9),
+    taskId: task.id,
+    timestamp: nowISO,
+    type: "success",
+    message: `Siklus #${task.totalCycles}: ${actionDesc}. Jeda berikutnya: ${randomIntervalSec}s.`,
+    details: {
+      addedViews: addViews,
+      addedLikes: addLikes,
+      addedComments: addComments,
+      totalViews: task.currentViews,
+      totalComments: task.currentComments,
+      randomDelaySec: randomIntervalSec,
+      nextRunTime: nextRunDate.toLocaleTimeString(),
+    },
+  };
+
+  executionLogs.unshift(log);
+  if (executionLogs.length > 250) {
+    executionLogs.pop();
+  }
+
+  return { randomIntervalSec, nextRunDate, actionDesc };
+}
+
 // Background scheduler tick (runs every 3 seconds autonomously in cloud server)
 setInterval(() => {
   const now = new Date();
@@ -264,10 +499,10 @@ setInterval(() => {
   let stateModified = false;
 
   tasks.forEach((task) => {
-    // If paused manually by user, do not process
-    if (task.status === "paused") return;
+    // If paused/stopped manually, do not process
+    if (task.status === "paused" || (task.status as string) === "stopped" || task.status === "completed") return;
 
-    // Check maintenance window
+    // Check maintenance window (e.g. 01:00 - 04:00)
     if (isWithinMaintenanceWindow(task.maintenanceStartHour, task.maintenanceEndHour, now)) {
       if (task.status !== "maintenance") {
         task.status = "maintenance";
@@ -277,7 +512,7 @@ setInterval(() => {
           taskId: task.id,
           timestamp: nowISO,
           type: "skip",
-          message: `[MAINTENANCE WINDOW] Task ditangguhkan sementara (${task.maintenanceStartHour}:00 - ${task.maintenanceEndHour}:00). Tidak ada aktivitas otomatis.`,
+          message: `[MAINTENANCE WINDOW] Task ditangguhkan sementara (${task.maintenanceStartHour}:00 - ${task.maintenanceEndHour}:00). Cooling down otomatis.`,
         };
         executionLogs.unshift(log);
       }
@@ -290,41 +525,8 @@ setInterval(() => {
 
     // Check if scheduled time reached
     if (!task.nextRunAt || new Date(task.nextRunAt) <= now) {
-      task.totalCycles += 1;
-      task.lastRunAt = nowISO;
+      executeSimulatedCycle(task);
       stateModified = true;
-
-      // Randomize next interval between minIntervalSec and maxIntervalSec
-      const randomIntervalSec =
-        Math.floor(Math.random() * (task.maxIntervalSec - task.minIntervalSec + 1)) +
-        task.minIntervalSec;
-      const nextRunDate = new Date(now.getTime() + randomIntervalSec * 1000);
-      task.nextRunAt = nextRunDate.toISOString();
-
-      const sampleActions = [
-        "Audit metrik penonton & ritme retensi",
-        "Evaluasi respon komentar organik & rasio like",
-        "Sinkronisasi buffer interaksi aman (Safe Ratio 1:20)",
-        "Pemeriksaan kesehatan sinyal algoritma & discoverability",
-      ];
-      const randomAction = sampleActions[task.totalCycles % sampleActions.length];
-
-      const log: LogEntry = {
-        id: Math.random().toString(36).substring(2, 9),
-        taskId: task.id,
-        timestamp: nowISO,
-        type: "success",
-        message: `Siklus #${task.totalCycles} selesai: ${randomAction}. Jeda berikutnya: ${randomIntervalSec} detik (${nextRunDate.toLocaleTimeString()}).`,
-        details: {
-          randomDelaySec: randomIntervalSec,
-          nextRunTime: nextRunDate.toLocaleTimeString(),
-        },
-      };
-
-      executionLogs.unshift(log);
-      if (executionLogs.length > 200) {
-        executionLogs.pop();
-      }
     }
   });
 
@@ -357,6 +559,238 @@ app.post("/api/calculate-projection", (req, res) => {
     res.status(400).json({ success: false, error: error.message || "Input tidak valid" });
   }
 });
+
+// Preview-First Validation Endpoint
+// Takes raw string, extracts embed_url or thumbnail. No strict regex rejection.
+app.post("/api/preview/check", (req, res) => {
+  try {
+    const rawUrl = req.body?.url || req.body?.video_url || "";
+    if (!rawUrl || typeof rawUrl !== "string" || !rawUrl.trim()) {
+      return res.status(200).json({
+        valid: false,
+        embed_url: null,
+        thumbnail: null,
+        error_message: "URL tidak boleh kosong. Masukkan link video sosial media.",
+      });
+    }
+
+    const preview = extractVideoPreview(rawUrl);
+    return res.status(200).json(preview);
+  } catch (err: any) {
+    return res.status(200).json({
+      valid: false,
+      embed_url: null,
+      thumbnail: null,
+      error_message: "Link tidak dikenali, pastikan link publik dan aktif.",
+    });
+  }
+});
+
+// Preview Alias for compatibility with Vercel /api/preview route
+app.post("/api/preview", (req, res) => {
+  try {
+    const rawUrl = req.body?.url || req.body?.video_url || "";
+    if (!rawUrl || typeof rawUrl !== "string" || !rawUrl.trim()) {
+      return res.status(200).json({
+        valid: false,
+        embed_url: null,
+        thumbnail: null,
+        error_message: "URL tidak boleh kosong. Masukkan link video sosial media.",
+      });
+    }
+
+    const preview = extractVideoPreview(rawUrl);
+    return res.status(200).json(preview);
+  } catch (err: any) {
+    return res.status(200).json({
+      valid: false,
+      embed_url: null,
+      thumbnail: null,
+      error_message: "Link tidak dikenali, pastikan link publik dan aktif.",
+    });
+  }
+});
+
+// Campaign Start Endpoint - HANYA boleh dipanggil jika preview valid
+app.post("/api/campaign/start", (req, res) => {
+  try {
+    const {
+      video_url,
+      url,
+      title,
+      targetComments = 50,
+      target_comments,
+      minIntervalSec = 15,
+      maxIntervalSec = 60,
+      maintenanceStartHour = 1,
+      maintenanceEndHour = 4,
+    } = req.body;
+
+    const rawLink = (video_url || url || "").trim();
+    if (!rawLink) {
+      return res.status(400).json({
+        success: false,
+        error: "video_url wajib diisi.",
+      });
+    }
+
+    // Strict rule: Validate using capability-based preview check first!
+    const preview = extractVideoPreview(rawLink);
+    if (!preview.valid) {
+      return res.status(400).json({
+        success: false,
+        error: preview.error_message || "Link tidak dikenali, pastikan link publik dan aktif.",
+      });
+    }
+
+    const normalizedUrl = cleanRawUrl(rawLink);
+    const minSec = Math.max(5, Number(minIntervalSec) || 15);
+    const maxSec = Math.max(minSec, Number(maxIntervalSec) || 60);
+    const comments = Math.max(0, Number(target_comments ?? targetComments) || 50);
+    const projections = hitungProyeksiEngagement(comments);
+    const id = "campaign-" + Date.now().toString(36);
+    const platform = (preview.platform || detectPlatform(normalizedUrl)) as any;
+
+    const randomFirstInterval = Math.floor(Math.random() * (maxSec - minSec + 1)) + minSec;
+    const nextRun = new Date(Date.now() + randomFirstInterval * 1000).toISOString();
+
+    const newCampaign: ScheduledTask = {
+      id,
+      url: normalizedUrl,
+      platform,
+      title: title?.trim() || preview.title || `${platform.toUpperCase()} Campaign (${normalizedUrl.slice(-10)})`,
+      status: "running",
+      minIntervalSec: minSec,
+      maxIntervalSec: maxSec,
+      maintenanceStartHour: Number(maintenanceStartHour) || 1,
+      maintenanceEndHour: Number(maintenanceEndHour) || 4,
+      targetComments: comments,
+      currentComments: 0,
+      currentViews: 0,
+      currentLikes: 0,
+      currentSaves: 0,
+      currentShares: 0,
+      embed_url: preview.embed_url,
+      thumbnail: preview.thumbnail,
+      projections,
+      totalCycles: 0,
+      lastRunAt: null,
+      nextRunAt: nextRun,
+      createdAt: new Date().toISOString(),
+    };
+
+    tasks.set(id, newCampaign);
+    saveStateToDisk();
+
+    const log: LogEntry = {
+      id: Math.random().toString(36).substring(2, 9),
+      taskId: id,
+      timestamp: new Date().toISOString(),
+      type: "info",
+      message: `Campaign baru diluncurkan untuk ${normalizedUrl}. Media terverifikasi (${platform}). Scheduler aktif.`,
+    };
+    executionLogs.unshift(log);
+
+    res.json({
+      success: true,
+      message: "Campaign berhasil diluncurkan!",
+      task: newCampaign,
+      campaign: newCampaign,
+      preview,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || "Gagal memulai campaign." });
+  }
+});
+
+// Campaign Status Endpoint
+app.get("/api/campaign/status", (req, res) => {
+  const taskList = Array.from(tasks.values());
+  res.json({
+    success: true,
+    campaigns: taskList,
+    total: taskList.length,
+    active: taskList.filter((t) => t.status === "running" || (t.status as string) === "active").length,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Campaign Stop Endpoint
+app.post("/api/campaign/stop", (req, res) => {
+  const id = req.body?.id || req.body?.campaign_id;
+  if (!id) {
+    return res.status(400).json({ success: false, error: "ID campaign wajib diisi." });
+  }
+
+  const task = tasks.get(id);
+  if (!task) {
+    return res.status(404).json({ success: false, error: "Campaign tidak ditemukan." });
+  }
+
+  task.status = "stopped";
+  task.nextRunAt = null;
+  saveStateToDisk();
+
+  const log: LogEntry = {
+    id: Math.random().toString(36).substring(2, 9),
+    taskId: task.id,
+    timestamp: new Date().toISOString(),
+    type: "warning",
+    message: `Campaign '${task.title}' DIHENTIKAN oleh pengguna.`,
+  };
+  executionLogs.unshift(log);
+
+  res.json({ success: true, message: "Campaign berhasil dihentikan.", campaign: task });
+});
+
+// Vercel Cron Job / Process Queue Serverless Endpoint
+// Triggered periodically by Vercel Cron OR manual test button
+const handleProcessQueue = (req: any, res: any) => {
+  try {
+    const force = req.query?.force === "true" || req.body?.force === true;
+    const now = new Date();
+    const processedTasks: ScheduledTask[] = [];
+
+    tasks.forEach((task) => {
+      // Only process active/running tasks
+      const isActive = task.status === "running" || (task.status as string) === "active";
+      if (!isActive) return;
+
+      const isDue = !task.nextRunAt || new Date(task.nextRunAt) <= now;
+      if (force || isDue) {
+        executeSimulatedCycle(task, force);
+        processedTasks.push(task);
+      }
+    });
+
+    if (processedTasks.length > 0) {
+      saveStateToDisk();
+    }
+
+    res.json({
+      success: true,
+      processed: processedTasks.length,
+      processedCampaigns: processedTasks.map((t) => ({
+        id: t.id,
+        title: t.title,
+        totalCycles: t.totalCycles,
+        currentViews: t.currentViews,
+        currentComments: t.currentComments,
+        nextRunAt: t.nextRunAt,
+      })),
+      timestamp: now.toISOString(),
+      message:
+        processedTasks.length > 0
+          ? `Berhasil memproses ${processedTasks.length} antrean kampanye!`
+          : "Tidak ada kampanye aktif yang jatuh tempo saat ini.",
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || "Gagal memproses antrean cron." });
+  }
+};
+
+app.get("/api/cron/process-queue", handleProcessQueue);
+app.post("/api/cron/process-queue", handleProcessQueue);
 
 // List Tasks & Logs
 app.get("/api/tasks", (req, res) => {

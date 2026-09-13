@@ -9,6 +9,15 @@ export interface EngagementProjections {
   statusMessage: string;
 }
 
+export interface PreviewResult {
+  valid: boolean;
+  embed_url?: string | null;
+  thumbnail?: string | null;
+  title?: string;
+  platform?: string;
+  error_message?: string;
+}
+
 export interface VideoAnalysis {
   objects: string[];
   dominantColors: string[];
@@ -23,12 +32,19 @@ export interface ScheduledTask {
   url: string;
   platform: "tiktok" | "instagram" | "youtube" | "facebook" | "twitter" | "threads" | "linkedin" | "pinterest" | "snapchat" | "generic";
   title: string;
-  status: "running" | "paused" | "maintenance";
+  status: "running" | "paused" | "maintenance" | "active" | "stopped" | "completed";
   minIntervalSec: number;
   maxIntervalSec: number;
   maintenanceStartHour: number;
   maintenanceEndHour: number;
   targetComments: number;
+  currentComments?: number;
+  currentViews?: number;
+  currentLikes?: number;
+  currentSaves?: number;
+  currentShares?: number;
+  embed_url?: string | null;
+  thumbnail?: string | null;
   projections: EngagementProjections;
   totalCycles: number;
   lastRunAt: string | null;

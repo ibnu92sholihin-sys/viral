@@ -4,6 +4,7 @@ import { TaskSchedulerPanel } from "./components/TaskSchedulerPanel";
 import { AiVisionAnalyzerPanel } from "./components/AiVisionAnalyzerPanel";
 import { EngagementCalculatorPanel } from "./components/EngagementCalculatorPanel";
 import { ExecutionLogsPanel } from "./components/ExecutionLogsPanel";
+import { VercelExportPanel } from "./components/VercelExportPanel";
 import { ScheduledTask, LogEntry, VideoAnalysis } from "./types";
 import {
   Layers,
@@ -22,7 +23,7 @@ import {
 export default function App() {
   const [tasks, setTasks] = useState<ScheduledTask[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<"scheduler" | "vision" | "calculator" | "logs">("scheduler");
+  const [activeTab, setActiveTab] = useState<"scheduler" | "vision" | "calculator" | "logs" | "vercel">("scheduler");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch tasks and logs from backend
@@ -256,6 +257,18 @@ export default function App() {
             <Terminal className="h-4 w-4" />
             <span>Log Audit Live ({logs.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab("vercel")}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 ${
+              activeTab === "vercel"
+                ? "bg-sky-500/10 text-sky-400 border border-sky-500/30 shadow-sm"
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
+            }`}
+          >
+            <Server className="h-4 w-4 text-emerald-400" />
+            <span>Vercel & SQL Export</span>
+          </button>
         </div>
 
         {/* Tab Panels */}
@@ -268,6 +281,7 @@ export default function App() {
                 onDeleteTask={handleDeleteTask}
                 onCreateTask={handleCreateTask}
                 onInspectAnalysis={() => setActiveTab("vision")}
+                onRefreshTasks={fetchTasksAndLogs}
               />
               <ExecutionLogsPanel logs={logs} />
             </div>
@@ -296,6 +310,12 @@ export default function App() {
           {activeTab === "logs" && (
             <div className="space-y-6">
               <ExecutionLogsPanel logs={logs} />
+            </div>
+          )}
+
+          {activeTab === "vercel" && (
+            <div className="space-y-6">
+              <VercelExportPanel />
             </div>
           )}
         </div>
