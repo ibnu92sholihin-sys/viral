@@ -1,0 +1,6 @@
+{
+  "name": "ViralPulse - Video Optimizer & Scheduler",
+  "description": "Aplikasi terintegrasi untuk analisis visual video berbasis AI, kalkulator rasio engagement organik, dan task scheduler berkala dengan maintenance window.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
